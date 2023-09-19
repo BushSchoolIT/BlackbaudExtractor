@@ -1,3 +1,5 @@
+Uses code authentification code forked from justein230/BbApiConnector-Python.
+
 # Components
 - For the authorization code generator, a simple HTTP server is needed in order to receive the code from Blackbaud. I used the Bottle framework, since it is easy to use and lightweight. It relies only on standard Python libraries!
 - For the API connector program, I create a Session object and use a config file for storing all the secrets, keys, tokens and other supporting information.
