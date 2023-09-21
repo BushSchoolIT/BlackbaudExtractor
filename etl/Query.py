@@ -183,6 +183,9 @@ conn = psycopg2.connect(
 conn.autocommit = True
 cursor = conn.cursor()
 
+
+# catch_up_days = ['08/30/2023', '08/31/2023', '09/01/2023', '09/04/2023', '09/05/2023', '09/06/2023', '09/07/2023', '09/08/2023', '09/11/2023', '09/12/2023', '09/13/2023']
+
 level_ids = ['781', '780', '779']
 for id in level_ids:
     print(id)
@@ -210,6 +213,6 @@ for id in level_ids:
         print('No data')
 
 conn.commit()
-print("Closing connection")
+print('Closing connection')
 conn.close()
 
