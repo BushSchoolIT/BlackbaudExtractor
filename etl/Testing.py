@@ -25,9 +25,9 @@ cursor = conn.cursor()
 
 print('Inserting data')
 if (len(df) > 0):
-    for index in range(0, len(df), 17):
-        columns = df["name"][index:(index+17)].values
-        values = df["value"][index:(index+17)].values
+    for index in range(0, len(df), 22):
+        columns = df["name"][index:(index+22)].values
+        values = df["value"][index:(index+22)].values
 
         print((','.join(columns)), tuple(values))
 
