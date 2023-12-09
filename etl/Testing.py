@@ -1,5 +1,6 @@
 from BbApiConnector import BbApiConnector
 import pandas as pd
+import numpy as np
 import psycopg2
 from psycopg2.extensions import AsIs
 
@@ -12,8 +13,6 @@ bb_session = api_conn.get_session()
 print('Getting data')
 req = bb_session.get("https://api.sky.blackbaud.com/school/v1/lists/advanced/153908")
 df = pd.json_normalize(req.json()["results"]["rows"], "columns").reset_index()
-df['grad_year'] = df['grad_year'].fillna(-1).astype(int)
-df['transcript_category'] = df['transcript_category'].fillna(-1).astype(int)
 
 print('Connecting to postgres')
 conn = psycopg2.connect(
@@ -39,8 +38,8 @@ if (len(df) > 0):
         print('SQL statment')
         print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
         cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
-    else:
-        print('No data')
+else:
+    print('No data')
 
 
 conn.commit()
