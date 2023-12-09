@@ -12,6 +12,9 @@ bb_session = api_conn.get_session()
 print('Getting data')
 req = bb_session.get("https://api.sky.blackbaud.com/school/v1/lists/advanced/153908")
 df = pd.json_normalize(req.json()["results"]["rows"], "columns").reset_index()
+df.grad_year = df.grad_year.fillna(-1).astype(int)
+df.transcript_category = df.transcript_category.fillna(-1).astype(int)
+
 
 print('Connecting to postgres')
 conn = psycopg2.connect(
@@ -47,3 +50,5 @@ conn.close()
 
 # Example SQL statment
 # b"insert into attendance (id,attendance_of_record,attendance_type,block_name,comment,date,excuse_category_id,excuse_description,excuse_type_id,excused,grad_year,grade,grade_level_sort,group_name,photo_file_name,section,section_id,student_name,student_user_id,teacher_name) values (72629513, true, false, 'C', '', '2023-12-08T08:20:00+00:00', 0, 'Illness - All Day (LS, MS, US)', 395, 1, '2025', '11th Grade', 12, 'Vertebrates: Origins, Designs & Threats - Fall - C (C)', 'thumb_user_5268758_355.jpg', 'Fall - C', 113366162, 'Weintraub, GianLucca ''25', 5268758, 'Meister, Cecile')"
+
+# b"insert into transcripts (User ID,First Name,Last Name,Grad Year,Course Title,Course ID,Course Code,Group Identifier,Term name,Grade Description,Grade Mode,Grade,Incomplete,Score,Final Score,Transcript category,Required,Credits Earned,Credits attempted,Group ID,Term ID,Grade ID) values ('6857126', 'Barack', 'Abdallah', '2025', 'CAS: SCE/Understanding Immigration', '287997', 'CAS 027S', 'Spring', 'Spring', 'Spring Term Credit/No Credit', 'term grade', 'CR', 'False', '3', 'True', '3378', 'True', '1', '1', '112380896', '142603', '1551942')"
