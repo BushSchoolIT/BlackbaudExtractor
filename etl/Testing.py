@@ -3,7 +3,9 @@ import pandas as pd
 import psycopg2
 from psycopg2.extensions import AsIs
 
-api_conn = BbApiConnector(r'C:\Users\Michael.Lindner\Documents\BbApiConnector-Python\resources\app_secrets.json')
+path = r'C:\Users\Install\BlackbaudExtractor\config\app_secrets.json'
+
+api_conn = BbApiConnector(path)
 print('Connecting to Blackbaud')
 bb_session = api_conn.get_session()
 
