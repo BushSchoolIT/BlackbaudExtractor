@@ -12,9 +12,8 @@ bb_session = api_conn.get_session()
 print('Getting data')
 req = bb_session.get("https://api.sky.blackbaud.com/school/v1/lists/advanced/153908")
 df = pd.json_normalize(req.json()["results"]["rows"], "columns").reset_index()
-df.grad_year = df.grad_year.fillna(-1).astype(int)
-df.transcript_category = df.transcript_category.fillna(-1).astype(int)
-
+df['grad_year'] = df['grad_year'].fillna(-1).astype(int)
+df['transcript_category'] = df['transcript_category'].fillna(-1).astype(int)
 
 print('Connecting to postgres')
 conn = psycopg2.connect(
