@@ -35,15 +35,21 @@ if (len(df) > 0):
         print((','.join(columns)), tuple(values))
 
         # insert_statement = 'insert into transcripts (%s) values %s'
-        insert_statement = 'INSERT INTO transcripts (%s) VALUES %s ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) DO UPDATE SET transcripts = EXCLUDED.transcripts;'
+        insert_statement = '''INSERT INTO transcripts (%s) VALUES %s
+          ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) 
+          DO UPDATE SET 
+          (student_first,student_last,grad_year,course_title,course_code,group_description,term_name,grade_description,grade_mode,grade,incomplete,score,final_score,transcript_category,required) = (EXCLUDED.student_first,EXCLUDED.student_last,EXCLUDED.grad_year,EXCLUDED.course_title,EXCLUDED.course_code,EXCLUDED.group_description,EXCLUDED.term_name,EXCLUDED.grade_description,EXCLUDED.grade_mode,EXCLUDED.grade,EXCLUDED.incomplete,EXCLUDED.score,EXCLUDED.final_score,EXCLUDED.transcript_category,EXCLUDED.required);'''
         print('SQL statment')
         print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
         cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
 else:
-    print('No data')
+    print('No data')a
 
 conn.commit()
 print('Closing connection')
 conn.close()
 
 # INSERT INTO transcripts (%s) VALUES %s ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) DO UPDATE SET transcripts = EXCLUDED.transcripts; 
+# b"INSERT INTO transcripts 
+# (student_user_id,student_first,student_last,grad_year,course_title,course_id,course_code,group_description,term_name,grade_description,grade_mode,grade,incomplete,score,final_score,transcript_category,required,grade_id,group_id,term_id)
+#  VALUES ('3459520', 'Carlos', 'Abram', '2024', 'Literature of Monstrosity', '336095', 'Eng 345', 'Fall - C', 'Fall', 'Senior Mid-Term Grades', 'regular grade', 'A-', 'False', '3.7', 'False', '726', 'False', '2135484', '113391881', '158287') ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) DO UPDATE SET transcripts = EXCLUDED.transcripts;"
