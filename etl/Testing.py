@@ -43,7 +43,7 @@ if (len(df) > 0):
         print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
         cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
 else:
-    print('No data')a
+    print('No data')
 
 conn.commit()
 print('Closing connection')
