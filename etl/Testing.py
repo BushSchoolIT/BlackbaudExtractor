@@ -28,9 +28,9 @@ cursor = conn.cursor()
 
 print('Inserting data')
 if (len(df) > 0):
-    for index in range(0, len(df), 21):
-        columns = df["name"][index:(index+21)].values
-        values = df["value"][index:(index+21)].values
+    for index in range(0, len(df), 28):
+        columns = df["name"][index:(index+28)].values
+        values = df["value"][index:(index+28)].values
 
         print((','.join(columns)), tuple(values))
 
@@ -38,7 +38,7 @@ if (len(df) > 0):
         insert_statement = '''INSERT INTO transcripts (%s) VALUES %s
           ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) 
           DO UPDATE SET 
-          (student_first,student_last,grad_year,course_title,course_code,group_description,term_name,grade_description,grade_mode,grade,incomplete,score,final_score,transcript_category,required,school_year) = (EXCLUDED.student_first,EXCLUDED.student_last,EXCLUDED.grad_year,EXCLUDED.course_title,EXCLUDED.course_code,EXCLUDED.group_description,EXCLUDED.term_name,EXCLUDED.grade_description,EXCLUDED.grade_mode,EXCLUDED.grade,EXCLUDED.incomplete,EXCLUDED.score,EXCLUDED.final_score,EXCLUDED.transcript_category,EXCLUDED.required,EXCLUDED.school_year);'''
+          (student_first,student_last,grad_year,course_title,course_code,group_description,term_name,grade_description,grade_mode,grade,incomplete,score,final_score,transcript_category,required,school_year,grade_level,address_1,address_2,address_3,address_city,address_state,address_zip) = (EXCLUDED.student_first,EXCLUDED.student_last,EXCLUDED.grad_year,EXCLUDED.course_title,EXCLUDED.course_code,EXCLUDED.group_description,EXCLUDED.term_name,EXCLUDED.grade_description,EXCLUDED.grade_mode,EXCLUDED.grade,EXCLUDED.incomplete,EXCLUDED.score,EXCLUDED.final_score,EXCLUDED.transcript_category,EXCLUDED.required,EXCLUDED.school_year,EXCLUDED.grade_level,EXCLUDED.address_1,EXCLUDED.address_2,EXCLUDED.address_3,EXCLUDED.address_city,EXCLUDED.address_state,EXCLUDED.address_zip);'''
         print('SQL statment')
         print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
         cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
