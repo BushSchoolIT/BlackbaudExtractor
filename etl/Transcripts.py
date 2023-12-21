@@ -1,6 +1,5 @@
 from BbApiConnector import BbApiConnector
 import pandas as pd
-import numpy as np
 import psycopg2
 from psycopg2.extensions import AsIs
 
@@ -34,7 +33,6 @@ if (len(df) > 0):
 
         print((','.join(columns)), tuple(values))
 
-        # insert_statement = 'insert into transcripts (%s) values %s'
         insert_statement = '''INSERT INTO transcripts (%s) VALUES %s
           ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) 
           DO UPDATE SET 
@@ -48,8 +46,3 @@ else:
 conn.commit()
 print('Closing connection')
 conn.close()
-
-# INSERT INTO transcripts (%s) VALUES %s ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) DO UPDATE SET transcripts = EXCLUDED.transcripts; 
-# b"INSERT INTO transcripts 
-# (student_user_id,student_first,student_last,grad_year,course_title,course_id,course_code,group_description,term_name,grade_description,grade_mode,grade,incomplete,score,final_score,transcript_category,required,grade_id,group_id,term_id)
-#  VALUES ('3459520', 'Carlos', 'Abram', '2024', 'Literature of Monstrosity', '336095', 'Eng 345', 'Fall - C', 'Fall', 'Senior Mid-Term Grades', 'regular grade', 'A-', 'False', '3.7', 'False', '726', 'False', '2135484', '113391881', '158287') ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) DO UPDATE SET transcripts = EXCLUDED.transcripts;"
