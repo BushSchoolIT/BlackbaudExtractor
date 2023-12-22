@@ -10,7 +10,7 @@ print('Connecting to Blackbaud')
 bb_session = api_conn.get_session()
 
 print('Getting data')
-# The problem is here - it is only returning the first page https://developer.sky.blackbaud.com/api#api=school&operation=V1ListsAdvancedByList_idGet
+# We need to iterate through the pages of data, BB only returns 1000 rows at a time.
 for i in range(1, 1000):
   req = bb_session.get("https://api.sky.blackbaud.com/school/v1/lists/advanced/153908" + "?page=" + str(i))
   df = pd.json_normalize(req.json()["results"]["rows"], "columns").reset_index()
