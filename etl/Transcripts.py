@@ -9,6 +9,18 @@ api_conn = BbApiConnector(path)
 print('Connecting to Blackbaud')
 bb_session = api_conn.get_session()
 
+print('Connecting to postgres')
+conn = psycopg2.connect(
+        database='postgres',
+        user='postgres',
+        password='Kto12SQL',
+        host='localhost',
+        port='5432'
+)
+
+conn.autocommit = True
+cursor = conn.cursor()
+
 list_IDs = ["153908", "154813", "154814", "154815", "154816", "154817", "154818", "154819",
             "154820", "154821", "154822", "154823", "154824", "154825", "154826", "154827",
             "154828", "154829", "154830", "154831", "154832", "154833", "154834", "154835",
@@ -31,19 +43,6 @@ for ID in list_IDs:
       if (df['name'][j] == "grade_id") and (pd.isnull(df['value'][j])==True):
         df['value'][j] = 999999
 
-
-    print('Connecting to postgres')
-    conn = psycopg2.connect(
-            database='postgres',
-            user='postgres',
-            password='Kto12SQL',
-            host='localhost',
-            port='5432'
-    )
-
-    conn.autocommit = True
-    cursor = conn.cursor()
-
     print('Inserting data')
     col_count = 25
     if (len(df) > 0):
@@ -60,7 +59,7 @@ for ID in list_IDs:
             cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
     else:
         print('No data')
-        break
+        break   
 
 conn.commit()
 print('Closing connection')
