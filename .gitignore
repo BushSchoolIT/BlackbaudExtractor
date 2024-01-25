@@ -1,2 +1,4 @@
 /config/app_secrets.ini
 /config/app_secrets.json
+etl/BbApiConnector/__pycache__/__init__.cpython-311.pyc
+etl/BbApiConnector/__pycache__/BbApiConnector.cpython-311.pyc
