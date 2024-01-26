@@ -60,6 +60,8 @@ for ID in list_IDs:
     else:
         print('No data')
         break   
+    
+# add a statement that removes 999999s from prior years
 
 conn.commit()
 print('Closing connection')
