@@ -14,6 +14,8 @@ conn = psycopg2.connect(
 conn.autocommit = True
 cursor = conn.cursor()
 
+# TODO Add a delete query to remove old 999999s
+
 # Defining the SELECT query
 select_query = """SELECT student_user_id, school_year, course_id, grade_description, grade_id, grade, grad_year
                   FROM public.transcripts 
