@@ -2,7 +2,14 @@ from BbApiConnector import BbApiConnector
 import pandas as pd
 import psycopg2
 from psycopg2.extensions import AsIs
+import transform_transcripts
 
+# TODO: resolve issue where running subsequent times causes error because 888888s are distinct and cause duplicate records.
+# maybe just remove them along with 999999s
+# TODO: call function to remove old 999999s
+# TODO: resolve issue where import sometimes crashes around F names. Might be a blackbaud thing.
+
+# Make our connections
 path = r'C:\Users\Install\BlackbaudExtractor\config\app_secrets.json'
 
 api_conn = BbApiConnector(path)
@@ -18,9 +25,11 @@ conn = psycopg2.connect(
         port='5432'
 )
 
+# Should I turn this off?
 conn.autocommit = True
 cursor = conn.cursor()
 
+# Import data
 list_IDs = ["153908", "154813", "154814", "154815", "154816", "154817", "154818", "154819",
             "154820", "154821", "154822", "154823", "154824", "154825", "154826", "154827",
             "154828", "154829", "154830", "154831", "154832", "154833", "154834", "154835",
@@ -60,8 +69,13 @@ for ID in list_IDs:
     else:
         print('No data')
         break   
-    
-# add a statement that removes 999999s from prior years
+
+conn.commit()
+
+# Transform data
+# add a function that removes 999999s from prior years
+transform_transcripts.fix_no_yearlong_possible(cursor)
+transform_transcripts.fix_cnc(cursor)
 
 conn.commit()
 print('Closing connection')
