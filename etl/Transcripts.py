@@ -4,9 +4,7 @@ import psycopg2
 from psycopg2.extensions import AsIs
 import transform_transcripts
 
-# TODO: resolve issue where running subsequent times causes error because 888888s are distinct and cause duplicate records.
-# maybe just remove them along with 999999s
-# TODO: call function to remove old 999999s
+
 # TODO: resolve issue where import sometimes crashes around F names. Might be a blackbaud thing.
 
 # Make our connections
@@ -28,6 +26,15 @@ conn = psycopg2.connect(
 # Should I turn this off?
 conn.autocommit = True
 cursor = conn.cursor()
+
+# Clean up old 999999, 888888, and 777777s
+print("here")
+req = bb_session.get("https://api.sky.blackbaud.com/school/v1/years")
+current_year = [d for d in req.json()["value"] if d['current_year'] == True]
+current_year = current_year[0]['school_year_label'][0:4] + " - " + current_year[0]['school_year_label'][5:]
+
+transform_transcripts.clean_up(cursor, current_year)
+conn.commit()
 
 # Import data
 list_IDs = ["153908", "154813", "154814", "154815", "154816", "154817", "154818", "154819",
@@ -63,20 +70,18 @@ for ID in list_IDs:
               ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) 
               DO UPDATE SET 
               (student_first,student_last,grad_year,course_title,course_code,group_description,term_name,grade_description,grade_mode,grade,score,transcript_category,school_year,grade_level,address_1,address_2,address_3,address_city,address_state,address_zip) = (EXCLUDED.student_first,EXCLUDED.student_last,EXCLUDED.grad_year,EXCLUDED.course_title,EXCLUDED.course_code,EXCLUDED.group_description,EXCLUDED.term_name,EXCLUDED.grade_description,EXCLUDED.grade_mode,EXCLUDED.grade,EXCLUDED.score,EXCLUDED.transcript_category,EXCLUDED.school_year,EXCLUDED.grade_level,EXCLUDED.address_1,EXCLUDED.address_2,EXCLUDED.address_3,EXCLUDED.address_city,EXCLUDED.address_state,EXCLUDED.address_zip);'''
-            print('SQL statment')
             print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
             cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
     else:
         print('No data')
         break   
-
 conn.commit()
 
 # Transform data
 # add a function that removes 999999s from prior years
 transform_transcripts.fix_no_yearlong_possible(cursor)
 transform_transcripts.fix_cnc(cursor)
-
 conn.commit()
+
 print('Closing connection')
 conn.close()

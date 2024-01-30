@@ -5,7 +5,20 @@ import numpy as np
 
 # TODO Add a delete query to remove old 999999s
 
+def clean_up(cursor, school_year):
+        delete_scheduled_courses_query = """DELETE FROM public.transcripts
+                          WHERE grade_id = 999999"""
+        delete_transforms_query = """DELETE FROM public.transcripts
+                                     WHERE (grade_id = 888888
+                                     OR grade_id = 777777)
+                                     AND school_year = \'{school_year}\'""".format(school_year = school_year)
+        
+        cursor.execute(delete_scheduled_courses_query)
+        cursor.execute(delete_transforms_query)
+        print("Cleaned up old records")
+
 def fix_no_yearlong_possible(cursor):
+        print("Fixing courses where no year-long grade is possible...")
         # Defining the SELECT query
         select_query = """SELECT student_user_id, school_year, course_id, grade_description, grade_id, grade, grad_year
                         FROM public.transcripts 
@@ -32,7 +45,6 @@ def fix_no_yearlong_possible(cursor):
         print(str(len(index_list)) + " records to check")
         for i in index_list:
                 if (df['grade_id'][i] != 999999) and (df['grade_description'][i] != 'Year-Long Grades'):
-                        print(df['grade_id'][i])
                         # Defining the UPDATE query
                         update_query = """UPDATE public.transcripts
                                         SET grade_description = \'no_yearlong_possible\',
@@ -45,6 +57,7 @@ def fix_no_yearlong_possible(cursor):
                         cursor.execute(update_query)
 
 def fix_cnc(cursor):
+        print("Fixing grades where one semester is C/CN and the other is a letter grade...")
         # Defining the SELECT query
         select_query = """SELECT student_user_id, school_year, course_id, grade_description, grade_id, grade, grad_year, term_id
                         FROM public.transcripts 
@@ -111,6 +124,7 @@ if __name__ == '__main__':
         conn.autocommit = True
         cursor = conn.cursor()
 
+        clean_up('2023 - 2024')
         fix_no_yearlong_possible(cursor)
         fix_cnc(cursor)
         conn.commit()
