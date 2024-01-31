@@ -3,9 +3,9 @@ from psycopg2.extensions import AsIs
 import pandas as pd
 import numpy as np
 
-# TODO Add a delete query to remove old 999999s
 
 def clean_up(cursor, school_year):
+        # TODO: Make this more flexible so it doesn't break if you import out of order
         delete_scheduled_courses_query = """DELETE FROM public.transcripts
                           WHERE grade_id = 999999"""
         delete_transforms_query = """DELETE FROM public.transcripts
