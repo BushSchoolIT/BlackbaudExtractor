@@ -3,6 +3,16 @@ from psycopg2.extensions import AsIs
 import pandas as pd
 import numpy as np
 
+def fall_yearlongs(cursor, school_year):
+        print("Reassigning grade_id for current Fall YL grades")
+        update_query = """UPDATE public.transcripts
+                        SET grade_description = \'current_fall_yl\',
+                                grade_id = 666666
+                        WHERE (school_year = \'{school_year}\' AND
+                                grade_description = \'Fall Term Grades YL\');""".format(school_year = school_year)
+        print(update_query)
+        # Executing the UPDATE query
+        cursor.execute(update_query)
 
 def clean_up(cursor, school_year):
         # TODO: Make this more flexible so it doesn't break if you import out of order
@@ -10,11 +20,17 @@ def clean_up(cursor, school_year):
                           WHERE grade_id = 999999"""
         delete_transforms_query = """DELETE FROM public.transcripts
                                      WHERE (grade_id = 888888
-                                     OR grade_id = 777777)
+                                     OR grade_id = 777777
+                                     OR grade_id = 666666)
                                      AND school_year = \'{school_year}\'""".format(school_year = school_year)
+        restore_fall_yl_query = """UPDATE public.transcripts
+                                   SET grade_description = \'Fall Term Grades YL\', grade_id = 2154180
+                                   WHERE (school_year != \'{school_year}\' 
+                                   AND grade_id = 666666);""".format(school_year = school_year)
         
         cursor.execute(delete_scheduled_courses_query)
         cursor.execute(delete_transforms_query)
+        cursor.execute(restore_fall_yl_query)
         print("Cleaned up old records")
 
 def fix_no_yearlong_possible(cursor):
@@ -124,7 +140,8 @@ if __name__ == '__main__':
         conn.autocommit = True
         cursor = conn.cursor()
 
-        clean_up('2023 - 2024')
+        clean_up(cursor, '2023 - 2024')
         fix_no_yearlong_possible(cursor)
         fix_cnc(cursor)
+        fall_yearlongs(cursor, '2023 - 2024')
         conn.commit()

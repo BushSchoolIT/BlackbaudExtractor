@@ -27,7 +27,7 @@ conn = psycopg2.connect(
 conn.autocommit = True
 cursor = conn.cursor()
 
-# Clean up old 999999, 888888, and 777777s
+# Clean up old 999999, 888888, and 777777s. Restore Fall YL
 req = bb_session.get("https://api.sky.blackbaud.com/school/v1/years")
 current_year = [d for d in req.json()["value"] if d['current_year'] == True]
 current_year = current_year[0]['school_year_label'][0:4] + " - " + current_year[0]['school_year_label'][5:]
@@ -80,6 +80,7 @@ conn.commit()
 # add a function that removes 999999s from prior years
 transform_transcripts.fix_no_yearlong_possible(cursor)
 transform_transcripts.fix_cnc(cursor)
+transform_transcripts.fall_yearlongs(cursor, current_year)
 conn.commit()
 
 print('Closing connection')
