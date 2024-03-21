@@ -38,7 +38,7 @@ conn.commit()
 # Import data
 list_IDs = ["153908", "154813", "154814", "154815", "154816", "154817", "154818", "154819",
             "154820", "154821", "154822", "154823", "154824", "154825", "154826", "154827",
-            "154828", "154829", "154830", "154831", "154832", "154833", "154834", "154835",
+            "154828", "154829", "154830", "155937", "154831", "154832", "154833", "154834", "154835",
             "154836", "154837"]
 
 print('Getting data')
@@ -77,7 +77,6 @@ for ID in list_IDs:
 conn.commit()
 
 # Transform data
-# add a function that removes 999999s from prior years
 transform_transcripts.fix_no_yearlong_possible(cursor)
 transform_transcripts.fix_cnc(cursor)
 transform_transcripts.fall_yearlongs(cursor, current_year)
