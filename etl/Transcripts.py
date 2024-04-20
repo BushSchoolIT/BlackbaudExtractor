@@ -18,7 +18,7 @@ print('Connecting to postgres')
 conn = psycopg2.connect(
         database='postgres',
         user='postgres',
-        password='Kto12SQL',
+        password='',
         host='localhost',
         port='5432'
 )
