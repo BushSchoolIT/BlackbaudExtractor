@@ -4,18 +4,6 @@ import psycopg2
 from psycopg2.extensions import AsIs
 import credentials
 
-print('Connecting to postgres')
-conn = psycopg2.connect(
-        credentials.database,
-        credentials.user,
-        credentials.password,
-        credentials.host,
-        credentials.port
-)
-
-# Should I turn this off?
-conn.autocommit = True
-cursor = conn.cursor()
 
 def weighted_average(frame):
     frame['product'] = frame.score * frame.credits
@@ -56,8 +44,19 @@ def get_gpas(cursor):
               calculated_gpa = EXCLUDED.calculated_gpa;'''.format(records_list_template)
     cursor.execute(insert_statement, data)
 
-    conn.commit()
 
-get_gpas(cursor)
-conn.close()
-# weight half for no year long possible and current fall yl
+if __name__ == '__main__':
+    print('Connecting to postgres')
+    conn = psycopg2.connect(
+            database = credentials.database,
+            user = credentials.user,
+            password = credentials.password,
+            host = credentials.host,
+            port = credentials.port
+    )
+
+    # what does autocommit do
+    conn.autocommit = True
+    get_gpas(conn.cursor())
+    conn.commit
+    conn.close()
