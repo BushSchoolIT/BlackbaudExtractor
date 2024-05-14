@@ -3,6 +3,8 @@ import pandas as pd
 import psycopg2
 from psycopg2.extensions import AsIs
 import transform_transcripts
+import GPA
+import credentials
 
 
 # TODO: resolve issue where import sometimes crashes around F names. Might be a blackbaud thing.
@@ -16,12 +18,13 @@ bb_session = api_conn.get_session()
 
 print('Connecting to postgres')
 conn = psycopg2.connect(
-        database='postgres',
-        user='postgres',
-        password='',
-        host='localhost',
-        port='5432'
+        database = credentials.database,
+        user = credentials.user,
+        password = credentials.password,
+        host = credentials.host,
+        port = credentials.port
 )
+
 
 # Should I turn this off?
 conn.autocommit = True
@@ -80,6 +83,10 @@ conn.commit()
 transform_transcripts.fix_no_yearlong_possible(cursor)
 transform_transcripts.fix_cnc(cursor)
 transform_transcripts.fall_yearlongs(cursor, current_year)
+conn.commit()
+
+# Update GPAs
+GPA.get_gpas(cursor)
 conn.commit()
 
 print('Closing connection')
