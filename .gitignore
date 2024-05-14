@@ -5,3 +5,4 @@ etl/BbApiConnector/__pycache__/BbApiConnector.cpython-311.pyc
 etl/__pycache__/transform_transcripts.cpython-311.pyc
 etl/credentials.py
 etl/__pycache__/credentials.cpython-311.pyc
+etl/credentials.py
