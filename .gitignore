@@ -6,4 +6,4 @@ etl/__pycache__/transform_transcripts.cpython-311.pyc
 etl/credentials.py
 etl/__pycache__/credentials.cpython-311.pyc
 etl/__pycache__/GPA.cpython-311.pyc
-etl/credentials.py
+etl/postgres_credentials.py
