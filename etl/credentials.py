@@ -1,5 +1,5 @@
-database='',
-user='',
-password='',
-host='',
+database=''
+user=''
+password=''
+host=''
 port=''
