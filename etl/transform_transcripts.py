@@ -2,7 +2,7 @@ import psycopg2
 from psycopg2.extensions import AsIs
 import pandas as pd
 import numpy as np
-import credentials
+import postgres_credentials
 
 def fall_yearlongs(cursor, school_year):
         print("Reassigning grade_id for current Fall YL grades")
@@ -131,11 +131,11 @@ def fix_cnc(cursor):
 if __name__ == '__main__':
         print('Connecting to postgres')
         conn = psycopg2.connect(
-            database = credentials.database,
-            user = credentials.user,
-            password = credentials.password,
-            host = credentials.host,
-            port = credentials.port
+            database = postgres_credentials.database,
+            user = postgres_credentials.user,
+            password = postgres_credentials.password,
+            host = postgres_credentials.host,
+            port = postgres_credentials.port
             )
 
         conn.autocommit = True

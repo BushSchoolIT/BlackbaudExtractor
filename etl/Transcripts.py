@@ -4,7 +4,7 @@ import psycopg2
 from psycopg2.extensions import AsIs
 import transform_transcripts
 import GPA
-import credentials
+import postgres_credentials
 
 
 # TODO: resolve issue where import sometimes crashes around F names. Might be a blackbaud thing.
@@ -18,11 +18,11 @@ bb_session = api_conn.get_session()
 
 print('Connecting to postgres')
 conn = psycopg2.connect(
-        database = credentials.database,
-        user = credentials.user,
-        password = credentials.password,
-        host = credentials.host,
-        port = credentials.port
+        database = postgres_credentials.database,
+        user = postgres_credentials.user,
+        password = postgres_credentials.password,
+        host = postgres_credentials.host,
+        port = postgres_credentials.port
 )
 
 

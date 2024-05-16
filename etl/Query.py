@@ -3,7 +3,7 @@ import os
 import psycopg2
 from psycopg2.extensions import AsIs
 from datetime import date
-import credentials
+import postgres_credentials
 
 print('Connecting to Blackbaud')
 
@@ -174,11 +174,11 @@ d1 = today.strftime('%m/%d/%Y')
 
 print('Connecting to postgres')
 conn = psycopg2.connect(
-        database = credentials.database,
-        user = credentials.user,
-        password = credentials.password,
-        host = credentials.host,
-        port = credentials.port
+        database = postgres_credentials.database,
+        user = postgres_credentials.user,
+        password = postgres_credentials.password,
+        host = postgres_credentials.host,
+        port = postgres_credentials.port
         )
 
 conn.autocommit = True
