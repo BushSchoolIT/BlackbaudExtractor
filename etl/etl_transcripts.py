@@ -3,7 +3,6 @@ import pandas as pd
 import psycopg2
 from psycopg2.extensions import AsIs
 import transform_transcripts
-import GPA
 import postgres_credentials
 
 
@@ -83,10 +82,6 @@ conn.commit()
 transform_transcripts.fix_no_yearlong_possible(cursor)
 transform_transcripts.fix_cnc(cursor)
 transform_transcripts.fall_yearlongs(cursor, current_year)
-conn.commit()
-
-# Update GPAs
-GPA.get_gpas(cursor)
 conn.commit()
 
 print('Closing connection')
