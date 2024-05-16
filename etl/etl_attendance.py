@@ -206,7 +206,8 @@ for id in level_ids:
             columns = output[i].keys()
             values = [output[i][column] for column in columns]
 
-            insert_statement = 'insert into attendance (%s) values %s'
+            insert_statement = '''insert into attendance (%s) values %s
+                                  ON CONFLICT (id) DO NOTHING;'''
             print('SQL statment')
             print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
             cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
@@ -216,4 +217,3 @@ for id in level_ids:
 conn.commit()
 print('Closing connection')
 conn.close()
-
