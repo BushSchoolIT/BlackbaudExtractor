@@ -1,4 +1,5 @@
 from prefect import flow
+import postgres_credentials
 import psycopg2
 import etl_attendance
 import etl_transcripts
