@@ -7,3 +7,4 @@ etl/__pycache__/credentials.cpython-311.pyc
 etl/__pycache__/GPA.cpython-311.pyc
 etl/postgres_credentials.py
 etl/__pycache__/postgres_credentials.cpython-311.pyc
+.vs
