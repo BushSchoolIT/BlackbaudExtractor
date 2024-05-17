@@ -11,7 +11,8 @@ def weighted_average(frame):
     denom = frame['credits'].sum()
     return round(num/denom,2)
 
-def get_gpas(cursor):
+def run_etl(conn):
+    cursor = conn.cursor()
     # Defining the SELECT query
     select_query = """SELECT student_user_id, score, grade_description
                         FROM public.transcripts 
@@ -57,6 +58,6 @@ if __name__ == '__main__':
 
     # what does autocommit do
     conn.autocommit = True
-    get_gpas(conn.cursor())
+    run_etl(conn)
     conn.commit
     conn.close()
