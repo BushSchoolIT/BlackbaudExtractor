@@ -3,3 +3,5 @@
 etl/postgres_credentials.py
 .vs
 etl/__pycache__/*.pyc
+etl/BbApiConnector/__pycache__/*.pyc
+
