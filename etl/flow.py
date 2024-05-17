@@ -18,16 +18,18 @@ def pg_connect():
 
 @flow
 def run_attendance():
-	conn = pg_connect()
-	etl_attendance.run_etl(conn)
-	pass
+    conn = pg_connect()
+    etl_attendance.run_etl(conn)
+    conn.commit
+    conn.close()
 
 @flow
 def run_transcripts():
-	conn = pg_connect()
-	etl_transcripts.run_etl(conn)
-	etl_gpa.run_etl(conn)
-	pass
+    conn = pg_connect()
+    etl_transcripts.run_etl(conn)
+    etl_gpa.run_etl(conn)
+    conn.commit
+    conn.close()
   
 if __name__ == "__main__":
     run_attendance.serve(name="run_attendance",
@@ -35,5 +37,4 @@ if __name__ == "__main__":
 	
     run_transcripts.serve(name="run_transcripts",
 	interval=86400)
-
 	
