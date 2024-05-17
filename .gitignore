@@ -1,9 +1,7 @@
 /config/app_secrets.ini
 /config/app_secrets.json
-etl/BbApiConnector/__pycache__/__init__.cpython-311.pyc
-etl/BbApiConnector/__pycache__/BbApiConnector.cpython-311.pyc
-etl/__pycache__/transform_transcripts.cpython-311.pyc
-etl/__pycache__/credentials.cpython-311.pyc
-etl/__pycache__/GPA.cpython-311.pyc
 etl/postgres_credentials.py
-etl/__pycache__/postgres_credentials.cpython-311.pyc
+.vs
+etl/__pycache__/*.pyc
+etl/BbApiConnector/__pycache__/*.pyc
+
