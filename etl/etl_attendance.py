@@ -7,6 +7,7 @@ import postgres_credentials
 
 
 def run_etl(conn):
+    cursor = conn.cursor()
     # Level IDs: [{'id': 781, 'abbreviation': 'LS', 'name': 'Lower School'}, {'id': 780, 'abbreviation': 'MS', 'name': 'Middle School'}, {'id': 779, 'abbreviation': 'US', 'name': 'Upper School'}]
     # Offering types: [{'id': 0, 'description': 'School'}, {'id': 1, 'description': 'Academics'}, {'id': 2, 'description': 'Activities'}, {'id': 3, 'description': 'Advisory'}, {'id': 4, 'description': 'Dorms'}, {'id': 5, 'description': 'Transcript'}, {'id': 6, 'description': 'OfferedCourse'}, {'id': 8, 'description': 'SchoolWideAwards'}, {'id': 9, 'description': 'Athletic'}, {'id': 10, 'description': 'Admissions'}, {'id': 11, 'description': 'Community groups'}, {'id': 12, 'description': 'Mentor'}, {'id': 13, 'description': 'Events'}]
 
