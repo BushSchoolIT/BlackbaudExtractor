@@ -1,4 +1,4 @@
-from prefect import flow
+from prefect import flow, serve, task
 import postgres_credentials
 import psycopg2
 import etl_attendance
@@ -14,8 +14,17 @@ def pg_connect():
             host = postgres_credentials.host,
             port = postgres_credentials.port
             )
-
     return conn
+
+@task
+def transcripts_task(conn):
+    etl_transcripts.run_etl(conn)
+    conn.commit
+
+@task
+def gpa_task(conn):
+    etl_gpa.run_etl(conn)
+    conn.commit
 
 @flow
 def run_attendance():
@@ -27,15 +36,13 @@ def run_attendance():
 @flow
 def run_transcripts():
     conn = pg_connect()
-    etl_transcripts.run_etl(conn)
-    etl_gpa.run_etl(conn)
-    conn.commit
+    transcripts_task(conn)
+    gpa_task(conn)
     conn.close()
   
 if __name__ == "__main__":
-    run_attendance.serve(name="run_attendance",
+    attendance_deploy = run_attendance.to_deployment(name="run_attendance",
     interval=86400)
-	
-    run_transcripts.serve(name="run_transcripts",
+    transcripts_deploy = run_transcripts.to_deployment(name="run_transcripts",
 	interval=86400)
-	
+    serve(attendance_deploy, transcripts_deploy)
