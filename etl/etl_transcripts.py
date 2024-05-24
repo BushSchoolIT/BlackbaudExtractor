@@ -73,6 +73,7 @@ def run_etl(conn):
   transform_transcripts.fix_no_yearlong_possible(conn)
   transform_transcripts.fix_cnc(conn)
   transform_transcripts.fall_yearlongs(conn, current_year)
+  transform_transcripts.insert_missing_transcript_categories(conn)
   conn.commit()
 
 if __name__ == '__main__':
