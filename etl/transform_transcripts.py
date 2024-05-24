@@ -12,7 +12,7 @@ def insert_missing_transcript_categories(conn):
         UPDATE public.transcripts
         SET transcript_category = departments.transcript_category
         FROM public.departments
-        WHERE transcripts.transcript_category::text LIKE departments.transcript_category || '%' 
+        WHERE transcripts.course_code::text LIKE departments.course_prefix || '%' 
         AND transcripts.grade_id = 999999;
         """
         # add transcript categories to scheduled courses
