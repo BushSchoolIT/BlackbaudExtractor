@@ -5,6 +5,13 @@ import numpy as np
 import postgres_credentials
 
 def insert_missing_transcript_categories(conn):
+        '''
+        This function will insert transcript categories where grade_id = 999999 as they do not exist for scheduled courses.
+        The transcript categories are identified based on the course prefix, which is the first
+        word in the course code. The transcript category mappings are stored in the public.departments table, which needs to be
+        manually kept up to date until we can get a better solution.
+        '''
+        # The public.departments table needs to be manually kept up to date until we can get a better solution.
         cursor = conn.cursor()
         print("Inserting missing transcript categories")
         # Defining the update query
@@ -20,14 +27,10 @@ def insert_missing_transcript_categories(conn):
         # Executing the UPDATE query
         cursor.execute(update_query)
 
-
-def map_departments(conn):
-        # were doing this instead of just mapping all departments to course codes because of historical course codes
-        # cursor = conn.cursor()
-        # currently this is done in powerbi
-        pass
-
 def fall_yearlongs(conn, school_year):
+        '''
+        docstring
+        '''
         cursor = conn.cursor()
         print("Reassigning grade_id for current Fall YL grades")
         update_query = """UPDATE public.transcripts
@@ -40,6 +43,9 @@ def fall_yearlongs(conn, school_year):
         cursor.execute(update_query)
 
 def clean_up(conn, school_year):
+        '''
+        docstring
+        '''
         cursor = conn.cursor()
         # TODO: Make this more flexible so it doesn't break if you import out of order
         delete_scheduled_courses_query = """DELETE FROM public.transcripts
@@ -60,6 +66,9 @@ def clean_up(conn, school_year):
         print("Cleaned up old records")
 
 def fix_no_yearlong_possible(conn):
+        '''
+        docstring
+        '''
         cursor = conn.cursor()
         print("Fixing courses where no year-long grade is possible...")
         # Defining the SELECT query
@@ -100,6 +109,9 @@ def fix_no_yearlong_possible(conn):
                         cursor.execute(update_query)
 
 def fix_cnc(conn):
+        '''
+        docstring
+        '''
         cursor = conn.cursor()
         print("Fixing grades where one semester is C/CN and the other is a letter grade...")
         # Defining the SELECT query
@@ -167,9 +179,10 @@ if __name__ == '__main__':
 
         conn.autocommit = True
 
-        # clean_up(conn, '2023 - 2024')
-        # fix_no_yearlong_possible(conn)
-        # fix_cnc(conn)
-        # fall_yearlongs(conn, '2023 - 2024')
+        # The year can be changed as reqired. When running without name == main, the year will be the current year.
+        clean_up(conn, '2023 - 2024')
+        fix_no_yearlong_possible(conn)
+        fix_cnc(conn)
+        fall_yearlongs(conn, '2023 - 2024')
         insert_missing_transcript_categories(conn)
         conn.commit()
