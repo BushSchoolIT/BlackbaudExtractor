@@ -4,6 +4,29 @@ import pandas as pd
 import numpy as np
 import postgres_credentials
 
+def insert_missing_transcript_categories(conn):
+        cursor = conn.cursor()
+        print("Inserting missing transcript categories")
+        # Defining the update query
+        update_query = """
+        UPDATE public.transcripts
+        SET transcript_category = departments.transcript_category
+        FROM public.departments
+        WHERE transcripts.transcript_category::text LIKE departments.transcript_category || '%' 
+        AND transcripts.grade_id = 999999;
+        """
+        # add transcript categories to scheduled courses
+        print(update_query)
+        # Executing the UPDATE query
+        cursor.execute(update_query)
+
+
+def map_departments(conn):
+        # were doing this instead of just mapping all departments to course codes because of historical course codes
+        # cursor = conn.cursor()
+        # currently this is done in powerbi
+        pass
+
 def fall_yearlongs(conn, school_year):
         cursor = conn.cursor()
         print("Reassigning grade_id for current Fall YL grades")
@@ -144,8 +167,9 @@ if __name__ == '__main__':
 
         conn.autocommit = True
 
-        clean_up(conn, '2023 - 2024')
-        fix_no_yearlong_possible(conn)
-        fix_cnc(conn)
-        fall_yearlongs(conn, '2023 - 2024')
+        # clean_up(conn, '2023 - 2024')
+        # fix_no_yearlong_possible(conn)
+        # fix_cnc(conn)
+        # fall_yearlongs(conn, '2023 - 2024')
+        insert_missing_transcript_categories(conn)
         conn.commit()
