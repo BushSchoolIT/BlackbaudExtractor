@@ -8,46 +8,55 @@ def insert_missing_transcript_categories(conn):
         '''
         This function will insert transcript categories where grade_id = 999999 as they do not exist for scheduled courses.
         The transcript categories are identified based on the course prefix, which is the first
-        word in the course code. The transcript category mappings are stored in the public.course_codes table, which needs to be
-        manually kept up to date until we can get a better solution.
+        word in the course code. The transcript category mappings are stored in the public.course_codes table, which needs to 
+        be manually kept up to date until we can get a better solution.
         '''
         # The public.course_codes table needs to be manually kept up to date until we can get a better solution.
         cursor = conn.cursor()
         print("Inserting missing transcript categories")
+
         # Defining the update query
         update_query = """
         UPDATE public.transcripts
         SET transcript_category = course_codes.transcript_category
         FROM public.course_codes
-        WHERE transcripts.course_code::text LIKE Course_codes.course_prefix || '%' 
+        WHERE transcripts.course_code::text LIKE course_codes.course_prefix || '%' 
         AND transcripts.grade_id = 999999;
         """
-        # add transcript categories to scheduled courses
         print(update_query)
+
         # Executing the UPDATE query
         cursor.execute(update_query)
 
 def fall_yearlongs(conn, school_year):
         '''
-        docstring
+        Reassigns grade_id for Fall YL grades when the year is the current year. We need to do this to
+        allow them to show up in powerBI. Typically Fll YL grades are filtered out because they are overwritten
+        by YL grades.
         '''
         cursor = conn.cursor()
-        print("Reassigning grade_id for current Fall YL grades")
+        print("Reassigning grade_id for current Fall YL grades...")
+        # Defining the UPDATE query
         update_query = """UPDATE public.transcripts
                         SET grade_description = \'current_fall_yl\',
                                 grade_id = 666666
                         WHERE (school_year = \'{school_year}\' AND
                                 grade_description = \'Fall Term Grades YL\');""".format(school_year = school_year)
         print(update_query)
+        
         # Executing the UPDATE query
         cursor.execute(update_query)
 
 def clean_up(conn, school_year):
         '''
-        docstring
+        This function removes records with grade_id = 999999, 888888, 777777, 666666 and restores Fall YL grades. 
+        This is done to prevent duplicates on a reimport because the grade_id is part of the primary key.
         '''
         cursor = conn.cursor()
         # TODO: Make this more flexible so it doesn't break if you import out of order
+        print("Cleaning up old records...")
+
+        # Defining the DELETE queries
         delete_scheduled_courses_query = """DELETE FROM public.transcripts
                           WHERE grade_id = 999999"""
         delete_transforms_query = """DELETE FROM public.transcripts
@@ -55,19 +64,24 @@ def clean_up(conn, school_year):
                                      OR grade_id = 777777
                                      OR grade_id = 666666)
                                      AND school_year = \'{school_year}\'""".format(school_year = school_year)
+        
+        # Defining the UPDATE query
         restore_fall_yl_query = """UPDATE public.transcripts
                                    SET grade_description = \'Fall Term Grades YL\', grade_id = 2154180
                                    WHERE (school_year != \'{school_year}\' 
                                    AND grade_id = 666666);""".format(school_year = school_year)
         
+        # Executing the queries
         cursor.execute(delete_scheduled_courses_query)
+        print('Deleted scheduled courses.')
         cursor.execute(delete_transforms_query)
+        print('Deleted transforms.')
         cursor.execute(restore_fall_yl_query)
-        print("Cleaned up old records")
+        print('Restored Fall YL grades.')
 
 def fix_no_yearlong_possible(conn):
         '''
-        docstring
+        This function will fix courses where no year-long grade is possible.
         '''
         cursor = conn.cursor()
         print("Fixing courses where no year-long grade is possible...")
@@ -181,8 +195,8 @@ if __name__ == '__main__':
 
         # The year can be changed as reqired. When running without name == main, the year will be the current year.
         # clean_up(conn, '2023 - 2024') # WARNING this will delete all records with grade_id = 999999, 888888, 777777, 666666
-        # fix_no_yearlong_possible(conn)
-        # fix_cnc(conn)
-        # fall_yearlongs(conn, '2023 - 2024')
+        fix_no_yearlong_possible(conn)
+        fix_cnc(conn)
+        fall_yearlongs(conn, '2023 - 2024')
         insert_missing_transcript_categories(conn)
         conn.commit()
