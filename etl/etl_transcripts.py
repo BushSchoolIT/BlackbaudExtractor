@@ -5,8 +5,6 @@ from psycopg2.extensions import AsIs
 import transform_transcripts
 import postgres_credentials
 
-# TODO: resolve issue where import sometimes crashes around F names. Might be a blackbaud thing.
-
 def run_etl(conn):
   cursor = conn.cursor()
 
@@ -31,7 +29,7 @@ def run_etl(conn):
   # Import data
   list_IDs = ["153908", "154813", "154814", "154815", "154816", "154817", "154818", "154819",
               "154820", "154821", "154822", "154823", "154824", "154825", "154826", "154827",
-              "154828", "154829", "154830", "155937", "154831", "154832", "154833", "154834", "154835",
+              "154828", "154829", "154830", "154831", "154832", "154833", "154834", "154835",
               "154836", "154837"]
 
   print('Getting data')
@@ -52,7 +50,7 @@ def run_etl(conn):
           df['value'][j] = 999999
 
       print('Inserting data')
-      col_count = 25
+      col_count = 24
       if (len(df) > 0):
           for index in range(0, len(df), col_count):
               columns = df["name"][index:(index+col_count)].values
@@ -61,7 +59,7 @@ def run_etl(conn):
               insert_statement = '''INSERT INTO transcripts (%s) VALUES %s
                 ON CONFLICT (student_user_id,term_id,group_id,course_id,grade_id) 
                 DO UPDATE SET 
-                (student_first,student_last,grad_year,course_title,course_code,group_description,term_name,grade_description,grade_mode,grade,score,transcript_category,school_year,grade_level,address_1,address_2,address_3,address_city,address_state,address_zip) = (EXCLUDED.student_first,EXCLUDED.student_last,EXCLUDED.grad_year,EXCLUDED.course_title,EXCLUDED.course_code,EXCLUDED.group_description,EXCLUDED.term_name,EXCLUDED.grade_description,EXCLUDED.grade_mode,EXCLUDED.grade,EXCLUDED.score,EXCLUDED.transcript_category,EXCLUDED.school_year,EXCLUDED.grade_level,EXCLUDED.address_1,EXCLUDED.address_2,EXCLUDED.address_3,EXCLUDED.address_city,EXCLUDED.address_state,EXCLUDED.address_zip);'''
+                (student_first,student_last,grad_year,course_title,course_code,group_description,term_name,grade_description,grade_mode,grade,score,transcript_category,school_year,address_1,address_2,address_3,address_city,address_state,address_zip) = (EXCLUDED.student_first,EXCLUDED.student_last,EXCLUDED.grad_year,EXCLUDED.course_title,EXCLUDED.course_code,EXCLUDED.group_description,EXCLUDED.term_name,EXCLUDED.grade_description,EXCLUDED.grade_mode,EXCLUDED.grade,EXCLUDED.score,EXCLUDED.transcript_category,EXCLUDED.school_year,EXCLUDED.address_1,EXCLUDED.address_2,EXCLUDED.address_3,EXCLUDED.address_city,EXCLUDED.address_state,EXCLUDED.address_zip);'''
               print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
               cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
       else:
