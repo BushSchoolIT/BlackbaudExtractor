@@ -54,6 +54,7 @@ def clean_up(conn, school_year):
         '''
         cursor = conn.cursor()
         # TODO: Make this more flexible so it doesn't break if you import out of order
+        # Current year must match the year that is in the Blackbaud advanced lists otherwise imports duplicate records and fails.
         print("Cleaning up old records...")
 
         # Defining the DELETE queries
@@ -86,6 +87,7 @@ def fix_no_yearlong_possible(conn):
         cursor = conn.cursor()
         print("Fixing courses where no year-long grade is possible...")
         # Defining the SELECT query
+        # We may be able to remove the grade_id = 999999 condition
         select_query = """SELECT student_user_id, school_year, course_id, grade_description, grade_id, grade, grad_year
                         FROM public.transcripts 
                         WHERE grade_description = \'Fall Term Grades YL\' 

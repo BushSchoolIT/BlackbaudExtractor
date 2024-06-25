@@ -23,6 +23,9 @@ def run_etl(conn):
   current_year = [d for d in req.json()["value"] if d['current_year'] == True]
   current_year = current_year[0]['school_year_label'][0:4] + " - " + current_year[0]['school_year_label'][5:]
 
+  #TEMPORARY FIX:
+  transform_transcripts.clean_up(conn, '2023 - 2024')
+
   transform_transcripts.clean_up(conn, current_year)
   conn.commit()
 
