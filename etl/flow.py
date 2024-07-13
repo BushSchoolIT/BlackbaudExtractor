@@ -4,6 +4,7 @@ import psycopg2
 import etl_attendance
 import etl_transcripts
 import etl_gpa
+import etl_enrollment
 
 def pg_connect():
     print('Connecting to postgres')
@@ -26,6 +27,11 @@ def gpa_task(conn):
     etl_gpa.run_etl(conn)
     conn.commit
 
+@task
+def enrollment_task(conn):
+    etl_enrollment.run_etl(conn)
+    conn.commit
+
 @flow
 def run_attendance():
     conn = pg_connect()
@@ -36,6 +42,7 @@ def run_attendance():
 @flow
 def run_transcripts():
     conn = pg_connect()
+    enrollment_task(conn)
     transcripts_task(conn)
     gpa_task(conn)
     conn.close()
