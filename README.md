@@ -1,3 +1,9 @@
+## Setting up Blackbaud
+- Register app
+- Create advanced lists
+
+Currently, the lists in blackbaud must be manually rolled over each year (pending a better solution). Time this with the registrar rolling over the year because the cleanup scripts could otherwise cause you to import duplicate records and cause errors. Be wary of schedueld runs.
+
 This repository is for performing ETL on a Blackbaud Education Management environment
 ## ETL scripts
 wordswordswords
@@ -11,8 +17,8 @@ Documentation directly copied from justein230's code:
 
 ### Prerequisites
 - In your python environment run `pip install bottle`. This will install all the libraries from pip that you need to run the auth code generator (`bb_auth.py` in resources).
-- Paste your Application ID and Application Secret into the placeholders in `app_secrets.json`. These will be used for authorization and authentication throughout the process. Also, paste your Blackbaud API Subscription Key in the placeholder in `app_secrets.json`.
-- Choose a URL to use for testing auth codes and set it in `test_api_endpoint` field in `app_secrets.json`. I arbitrarily picked the `Role list` endpoint in the School API for my purposes, but you can pick any endpoint you wish.
+- Paste your Application ID and Application Secret into the placeholders in `app_secrets.py`. These will be used for authorization and authentication throughout the process. Also, paste your Blackbaud API Subscription Key in the placeholder in `app_secrets.py`. Put these fields in 'app_secrets.json' as well. Other fields for that file will come later.
+- Choose a URL to use for testing auth codes and set it in `test_api_endpoint` field in `app_secrets.py`. I arbitrarily picked the `Role list` endpoint in the School API for my purposes, but you can pick any endpoint you wish.
 - If you are an environment admin, make sure that you have connected your application to the environment from which you want to pull data. If you are not an environment admin, ask your administrator to connect your SKY API application. Instructions on how to do this are [here](https://developer.blackbaud.com/skyapi/docs/createapp). Just to clarify, steps 1 and 2 of this guide are to be performed by you (the application creator), and steps 3 and 4 are to be completed by an environment admin.
 - Port 13631 is used on the local machine to run the web server. Make sure that [here](https://developer.blackbaud.com/apps/), in your application settings, under Redirect URIs, that you have `http://localhost:13631/callback` as an option.
 
