@@ -1,5 +1,6 @@
 /config/app_secrets.ini
 /config/app_secrets.json
+/config/app_secrets.py
 etl/postgres_credentials.py
 .vs
 etl/__pycache__/*.pyc
