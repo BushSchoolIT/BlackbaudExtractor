@@ -29,7 +29,11 @@ The OAuth Authentication is handled by justein230's Blackbaud API Connector. See
 ## Settting up the PostgresQL server
 wordswords
 
-## ETL scripts
+## ETL
+
+### Setting up Prefect for orchestration
+
+### Included ETL scripts
 Currently, the following ETL Pipelines are included:
 Attendance data 
 Transcript data
