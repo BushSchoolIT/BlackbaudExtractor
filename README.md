@@ -31,7 +31,8 @@ wordswords
 
 ## ETL
 
-### Setting up Prefect for orchestration
+### Using Prefect for orchestration
+Conda install Prefect or pip install prefect depending on your dev environment. prefect server start runs the server, and excecuting flow.py in your python env starts polling the deployments. Alternativly, on windows you can use the included .bat files. In our implimentatnion, the prefect server and polling are set to automatically restart whenever the server restarts using windows scheduler. Currently this is a little buggy. Open http://127.0.0.1:4200/dashboard on the machine where the Prefect server is running to view runs of the ETL flows.
 
 ### Included ETL scripts
 Currently, the following ETL Pipelines are included:
@@ -39,3 +40,5 @@ Attendance data
 Transcript data
 GPA calculation
 Enrollment data
+
+
