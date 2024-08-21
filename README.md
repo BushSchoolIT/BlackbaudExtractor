@@ -3,11 +3,11 @@
 **BlackbaudExtractor** is an ETL tool designed to extract, transform, and load data from a Blackbaud Education Management environment into a PostgreSQL database. The tool leverages Python for managing ETL pipelines and Prefect for orchestration.
 
 ## Features
-Data Extraction: Extracts data such as attendance, transcripts, GPA, and enrollment from Blackbaud Education Management.
-Data Transformation: Customizable transformations to align with specific data models or requirements.
-Load to PostgreSQL: Seamless loading of transformed data into a PostgreSQL database for further analysis or reporting.
-Orchestration with Prefect: Manages and monitors ETL flows using Prefect, with options for automatic server restarts.
-OAuth Authentication: Secure access to Blackbaud’s APIs using OAuth tokens.
+- Data Extraction: Extracts data such as attendance, transcripts, GPA, and enrollment from Blackbaud Education Management.
+- Data Transformation: Customizable transformations to align with specific data models or requirements.
+- Load to PostgreSQL: Seamless loading of transformed data into a PostgreSQL database for further analysis or reporting.
+- Orchestration with Prefect: Manages and monitors ETL flows using Prefect, with options for automatic server restarts.
+- OAuth Authentication: Secure access to Blackbaud’s APIs using OAuth tokens.
 
 ## Prerequisites
 - Python 3.x: Ensure you have Python installed.
