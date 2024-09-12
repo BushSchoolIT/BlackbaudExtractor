@@ -6,7 +6,8 @@ import postgres_credentials
 
 def insert_missing_transcript_categories(conn):
         '''
-        This function will insert transcript categories where grade_id = 999999 as they do not exist for scheduled courses.
+        This function will insert transcript categories where none exist.
+        This is always the case for grade_id = 999999 as they do not exist for scheduled courses.
         The transcript categories are identified based on the course prefix, which is the first
         word in the course code. The transcript category mappings are stored in the public.course_codes table, which needs to 
         be manually kept up to date until we can get a better solution.
@@ -21,7 +22,7 @@ def insert_missing_transcript_categories(conn):
         SET transcript_category = course_codes.transcript_category
         FROM public.course_codes
         WHERE transcripts.course_code::text LIKE course_codes.course_prefix || '%' 
-        AND transcripts.grade_id = 999999;
+        AND transcripts.transcript_category = 'NaN';
         """
         print(update_query)
 
@@ -197,8 +198,8 @@ if __name__ == '__main__':
 
         # The year can be changed as reqired. When running without name == main, the year will be the current year.
         # clean_up(conn, '2023 - 2024') # WARNING this will delete all records with grade_id = 999999, 888888, 777777, 666666
-        fix_no_yearlong_possible(conn)
-        fix_cnc(conn)
-        fall_yearlongs(conn, '2023 - 2024')
+        # fix_no_yearlong_possible(conn)
+        # fix_cnc(conn)
+        # fall_yearlongs(conn, '2023 - 2024')
         insert_missing_transcript_categories(conn)
         conn.commit()
