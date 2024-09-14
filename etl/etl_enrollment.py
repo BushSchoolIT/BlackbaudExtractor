@@ -7,9 +7,6 @@ from BbApiConnector import BbApiConnector
 def run_etl(conn):
   cursor = conn.cursor()
 
-  # Should I turn this off?
-  conn.autocommit = True
-
   # Make our connections
   path = r'C:\Users\Install\BlackbaudExtractor\config\app_secrets.json'
 
@@ -40,7 +37,6 @@ def run_etl(conn):
     else:
         print('No data')
         break   
-  conn.commit()
 
   print('Getting departed student data')
   # We need to iterate through the pages of data, BB only returns 1000 rows at a time
@@ -65,7 +61,6 @@ def run_etl(conn):
     else:
         print('No data')
         break   
-  conn.commit()
 
 if __name__ == '__main__':
     print('Connecting to postgres')
@@ -78,5 +73,6 @@ if __name__ == '__main__':
           )
   
     run_etl(conn)
+    conn.commit()
     print('Closing connection')
     conn.close()

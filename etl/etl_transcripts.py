@@ -8,9 +8,6 @@ import postgres_credentials
 def run_etl(conn):
   cursor = conn.cursor()
 
-  # Should I turn this off?
-  conn.autocommit = True
-
   # Make our connections
   path = r'C:\Users\Install\BlackbaudExtractor\config\app_secrets.json'
 
@@ -65,14 +62,12 @@ def run_etl(conn):
       else:
           print('No data')
           break   
-  conn.commit()
 
   # Transform data
   transform_transcripts.fix_no_yearlong_possible(conn)
   transform_transcripts.fix_cnc(conn)
   transform_transcripts.fall_yearlongs(conn, current_year)
   transform_transcripts.insert_missing_transcript_categories(conn)
-  conn.commit()
 
 if __name__ == '__main__':
   print('Connecting to postgres')

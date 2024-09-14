@@ -20,17 +20,14 @@ def pg_connect():
 @task
 def transcripts_task(conn):
     etl_transcripts.run_etl(conn)
-    conn.commit
 
 @task
 def gpa_task(conn):
     etl_gpa.run_etl(conn)
-    conn.commit
 
 @task
 def enrollment_task(conn):
     etl_enrollment.run_etl(conn)
-    conn.commit
 
 @flow
 def run_attendance():
@@ -41,11 +38,21 @@ def run_attendance():
 
 @flow
 def run_transcripts():
-    conn = pg_connect()
-    enrollment_task(conn)
-    transcripts_task(conn)
-    gpa_task(conn)
-    conn.close()
+    try:
+        conn = pg_connect()
+        conn.autocommit = False
+
+        enrollment_task(conn)
+        transcripts_task(conn)
+        gpa_task(conn)
+
+        conn.commit()
+        conn.close()
+        
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("error in transaction, reverting")
+        conn.rollback()
+
   
 if __name__ == "__main__":
     attendance_deploy = run_attendance.to_deployment(name="run_attendance",

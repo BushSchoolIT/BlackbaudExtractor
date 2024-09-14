@@ -57,7 +57,6 @@ if __name__ == '__main__':
     )
 
     # what does autocommit do
-    conn.autocommit = True
     run_etl(conn)
-    conn.commit
+    conn.commit()
     conn.close()
