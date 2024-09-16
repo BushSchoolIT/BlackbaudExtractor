@@ -31,10 +31,15 @@ def enrollment_task(conn):
 
 @flow
 def run_attendance():
-    conn = pg_connect()
-    etl_attendance.run_etl(conn)
-    conn.commit
-    conn.close()
+    try:
+        conn = pg_connect()
+        etl_attendance.run_etl(conn)
+        conn.commit
+        conn.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("error in transaction, reverting")
+        conn.rollback()
 
 @flow
 def run_transcripts():
@@ -42,7 +47,7 @@ def run_transcripts():
         conn = pg_connect()
         conn.autocommit = False
 
-        # enrollment_task(conn)
+        enrollment_task(conn)
         transcripts_task(conn)
         gpa_task(conn)
 
