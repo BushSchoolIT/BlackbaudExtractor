@@ -1,6 +1,6 @@
 # BlackbaudExtractor
 
-Created and maintained by Michael Lindner. Credit to justein230 for their Blackbaud API connector code.
+Created and maintained by Michael Lindner (github.com/MCLindner). Credit to justein230 for their Blackbaud API connector code.
 
 **BlackbaudExtractor** is an ETL tool designed to extract, transform, and load data from a Blackbaud Education Management environment into a PostgreSQL database. The tool leverages Python for managing ETL pipelines and Prefect for orchestration.
 
