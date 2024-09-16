@@ -42,7 +42,7 @@ def run_transcripts():
         conn = pg_connect()
         conn.autocommit = False
 
-        enrollment_task(conn)
+        # enrollment_task(conn)
         transcripts_task(conn)
         gpa_task(conn)
 
