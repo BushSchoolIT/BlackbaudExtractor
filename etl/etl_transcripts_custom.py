@@ -11,9 +11,6 @@ def run_etl(conn):
   exit()
   cursor = conn.cursor()
 
-  # Should I turn this off?
-  conn.autocommit = True
-
   # Make our connections
   path = r'C:\Users\Install\BlackbaudExtractor\config\app_secrets.json'
 
@@ -179,7 +176,15 @@ if __name__ == '__main__':
           host = postgres_credentials.host,
           port = postgres_credentials.port
           )
+  conn.autocommit = False
   
-  run_etl(conn)
+  try:
+        run_etl(conn)
+        conn.commit()      
+
+  except (Exception, psycopg2.DatabaseError) as error:
+        print("error in transaction, reverting")
+        conn.rollback()
+
   print('Closing connection')
   conn.close()
