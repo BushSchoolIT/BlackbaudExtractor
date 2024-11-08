@@ -58,14 +58,21 @@ def clean_up(conn, school_year):
         # Current year must match the year that is in the Blackbaud advanced lists otherwise imports duplicate records and fails.
         print("Cleaning up old records...")
 
+        end_year = int(school_year[7:])
+        year_list = (end_year, end_year - 1, end_year - 2, end_year - 3, end_year - 4)
+        year_list_formatted = [str(year) + " - " + str(year + 1) for year in year_list]
+
         # Defining the DELETE queries
         delete_scheduled_courses_query = """DELETE FROM public.transcripts
                           WHERE grade_id = 999999"""
-        delete_transforms_query = """DELETE FROM public.transcripts
+        
+        def iterate_delete_transforms_query(school_year_iterated):
+                return """DELETE FROM public.transcripts
                                      WHERE (grade_id = 888888
                                      OR grade_id = 777777
                                      OR grade_id = 666666)
-                                     AND school_year = \'{school_year}\'""".format(school_year = school_year)
+                                     AND school_year = \'{school_year}\'""".format(school_year = school_year_iterated)
+        
         
         # Defining the UPDATE query
         restore_fall_yl_query = """UPDATE public.transcripts
@@ -73,10 +80,14 @@ def clean_up(conn, school_year):
                                    WHERE (school_year != \'{school_year}\' 
                                    AND grade_id = 666666);""".format(school_year = school_year)
         
+
+
         # Executing the queries
         cursor.execute(delete_scheduled_courses_query)
         print('Deleted scheduled courses.')
-        cursor.execute(delete_transforms_query)
+
+        for year in year_list_formatted:
+                cursor.execute(iterate_delete_transforms_query(year))
         print('Deleted transforms.')
         cursor.execute(restore_fall_yl_query)
         print('Restored Fall YL grades.')
