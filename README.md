@@ -11,6 +11,19 @@ Created and maintained by Michael Lindner (github.com/MCLindner). Credit to just
 - Orchestration with Prefect: Manages and monitors ETL flows using Prefect, with options for automatic server restarts.
 - OAuth Authentication: Secure access to Blackbaud’s APIs using OAuth tokens.
 
+## Included ETL Pipelines
+Transcripts
+GPA
+Enrollment
+Attendance
+Transcript comments (official notes from advisors)
+
+Planned:
+Ravenna
+Non-blackbaud LMS data
+Raisers edge
+... and more
+
 ## Prerequisites
 - Python 3.x: Ensure you have Python installed.
 - PostgreSQL: Install and configure PostgreSQL.
