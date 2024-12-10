@@ -21,7 +21,6 @@ def run_etl(conn):
   current_year = current_year[0]['school_year_label'][0:4] + " - " + current_year[0]['school_year_label'][5:]
 
   transform_transcripts.clean_up(conn, current_year)
-  # conn.commit() this may have been causing the error
 
   # Import data
   list_IDs = ["153908", "154813", "154814", "154815", "154816", "154817", "154818", "154819",
