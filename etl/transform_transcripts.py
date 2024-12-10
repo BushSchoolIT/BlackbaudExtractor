@@ -70,7 +70,8 @@ def clean_up(conn, school_year):
                 return """DELETE FROM public.transcripts
                                      WHERE (grade_id = 888888
                                      OR grade_id = 777777
-                                     OR grade_id = 666666)
+                                     OR grade_id = 666666
+                                     OR grade_description = \'Senior Mid-Term Grades\')
                                      AND school_year = \'{school_year}\'""".format(school_year = school_year_iterated)
         
         
