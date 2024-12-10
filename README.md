@@ -11,11 +11,25 @@ Created and maintained by Michael Lindner (github.com/MCLindner). Credit to just
 - Orchestration with Prefect: Manages and monitors ETL flows using Prefect, with options for automatic server restarts.
 - OAuth Authentication: Secure access to Blackbaud’s APIs using OAuth tokens.
 
+## Included ETL Pipelines
+Transcripts
+GPA
+Enrollment
+Attendance
+Transcript comments (official notes from advisors)
+
+Planned:
+Ravenna
+Non-blackbaud LMS data
+Raisers edge
+... and more
+
 ## Prerequisites
 - Python 3.x: Ensure you have Python installed.
 - PostgreSQL: Install and configure PostgreSQL.
 - Prefect: Install Prefect to manage and monitor ETL flows.
 - Blackbaud SKY API access.
+- Access to manage and create advanced lists in Blackbaud
 
 Additionally you will need the following Python libraries:
 - bottle
@@ -35,10 +49,6 @@ To register an app with Blackbaud:
 - After creating the app, you'll receive a Client ID and Client Secret.
 - Use these for OAuth authentication in your app
 
-If you are using any of the inlcuded ETL files that pull advanced lists, create advanced lists in blackbaud with each field found in the sql statements for the ETL python files that you intend to use. Replace the List IDs in the list id array with the list IDs for your advanced lists.
-
-Currently, the lists in Blackbaud must be manually rolled over each year (pending a better solution). Time this with the registrar rolling over the year because the cleanup scripts could otherwise cause you to import duplicate records and cause errors. Be wary of schedueld runs.
-
 ### Authorizing with Blackbaud
 The OAuth Authentication is handled by justein230's Blackbaud API Connector. See justein230/BbApiConnector-Python. I have reused some of their documentation here, though I have slightly changed his code to work with my environment.
 
@@ -54,6 +64,12 @@ The OAuth Authentication is handled by justein230's Blackbaud API Connector. See
 2. When the application is running, go to `http://localhost:13631`. Here, you will find the link that you need to go to in order to authorize your application with your credentials.
 3. Sign in with your Blackbaud ID, then click "Authorize". You should be taken to a screen with your authorization code. If you look at the console of the application, you will see a very long access token and a much shorter refresh token. Copy these values and paste them in `app_secrets.json`.
 4. Once you have copied these values into the config file, you can terminate the bb_auth application.
+
+### Create Advanced lists in Blackbaud
+
+If you are using any of the inlcuded ETL files that pull advanced lists, create advanced lists in blackbaud with each field found in the sql statements for the ETL python files that you intend to use. Replace the List IDs in the list id array with the list IDs for your advanced lists.
+
+Currently, the lists in Blackbaud must be manually rolled over each year (pending a better solution). Time this with the registrar rolling over the year because the cleanup scripts could otherwise cause you to import duplicate records and cause errors. Be wary of schedueld runs. Currently, the transcript transformation code is set to clean up the last four years, and remove the scheduled courses for one year in the future. To be clear, your transcript advanced lists should filter to include the past four years of grades, including the current year, and one additional future year (5 years in total). If the current year is 2024-2025, filter include 2021-2022 to 2025-206. I'd like to find a solution where we can just use relative time and not need to change anything each year, but given how the academic year works that has proven difficult. The exact advanced list setup will be added to this documentation when I have time. The reason that I don't just remove the advanced list filter and then remimport everything with every run is because it'll crash if you do too much at once. This is just a limitation of Blackbaud's API.
 
 ## Settting up the PostgresQL server
 Follow the standard PostgresQL installation process. Create tables that align with the data that you are pulling from Blackbaud.
