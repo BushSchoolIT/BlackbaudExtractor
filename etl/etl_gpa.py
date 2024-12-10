@@ -3,13 +3,17 @@ import numpy as np
 import psycopg2
 from psycopg2.extensions import AsIs
 import postgres_credentials
+from decimal import Decimal, getcontext
+getcontext().prec = 4
 
 
 def weighted_average(frame):
     frame['product'] = frame.score * frame.credits
     num = frame['product'].sum()
     denom = frame['credits'].sum()
-    return round(num/denom,2)
+
+    # getting rid of floating point errors by converting int64 to float and float to decimal
+    return round(Decimal(float(num))/Decimal(float(denom)),2)
 
 def run_etl(conn):
     cursor = conn.cursor()
