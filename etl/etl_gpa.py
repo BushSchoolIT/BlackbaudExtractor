@@ -17,6 +17,12 @@ def weighted_average(frame):
 
 def run_etl(conn):
     cursor = conn.cursor()
+
+    # Defining the CLEAN UP query
+    clean_up_query = """TRUNCATE TABLE public.gpa;"""
+    cursor.execute(clean_up_query)
+
+
     # Defining the SELECT query
     select_query = """SELECT student_user_id, score, grade_description
                         FROM public.transcripts 
@@ -25,7 +31,8 @@ def run_etl(conn):
                         AND  grade_id != 999999
                         AND (grade = \'A\' OR grade = \'A-\' OR grade = \'B+\' OR grade = \'B\' 
                         OR   grade = \'B-\' OR grade = \'C+\' OR grade = \'C\' OR grade = \'C-\'
-                        OR   grade = \'D+\' OR grade = \'D\' OR grade = \'F\' OR grade = \'WF\') 
+                        OR   grade = \'D+\' OR grade = \'D\' OR grade = \'F\' OR grade = \'WF\'
+                        OR   grade = \'NC\')             
                         ORDER BY student_user_id ASC;"""
 
     # Executing the SELECT query
