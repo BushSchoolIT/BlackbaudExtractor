@@ -5,6 +5,7 @@ import etl_attendance
 import etl_transcripts
 import etl_gpa
 import etl_enrollment
+import etl_transcript_comments
 
 def pg_connect():
     print('Connecting to postgres')
@@ -29,6 +30,10 @@ def gpa_task(conn):
 def enrollment_task(conn):
     etl_enrollment.run_etl(conn)
 
+@task 
+def comments_task(conn):
+    etl_transcript_comments.run_etl(conn)
+
 @flow
 def run_attendance():
     try:
@@ -50,11 +55,13 @@ def run_transcripts():
         enrollment_task(conn)
         transcripts_task(conn)
         gpa_task(conn)
+        comments_task(conn)
 
         conn.commit()
         conn.close()
         
     except (Exception, psycopg2.DatabaseError) as error:
+        # Exception catches all errors so psycopg2.DatabaseError is not necessary
         print("error in transaction, reverting")
         conn.rollback()
 
