@@ -18,11 +18,26 @@ def insert_missing_transcript_categories(conn):
 
         # Defining the update query
         update_query = """
+        WITH ranked_prefixes AS (
+            SELECT
+                transcripts.course_code,
+                course_codes.transcript_category,
+                ROW_NUMBER() OVER (PARTITION BY transcripts.course_code ORDER BY LENGTH(course_codes.course_prefix) DESC) AS rn
+            FROM
+                public.transcripts
+            JOIN
+                public.course_codes
+            ON
+                transcripts.course_code::text LIKE course_codes.course_prefix || '%'
+            WHERE
+                transcripts.transcript_category = 'NaN'
+        )
         UPDATE public.transcripts
-        SET transcript_category = course_codes.transcript_category
-        FROM public.course_codes
-        WHERE transcripts.course_code::text LIKE course_codes.course_prefix || '%' 
-        AND transcripts.transcript_category = 'NaN';
+        SET transcript_category = ranked_prefixes.transcript_category
+        FROM ranked_prefixes
+        WHERE public.transcripts.course_code = ranked_prefixes.course_code
+        AND public.transcripts.transcript_category = 'NaN'
+        AND ranked_prefixes.rn = 1;
         """
         print(update_query)
 
