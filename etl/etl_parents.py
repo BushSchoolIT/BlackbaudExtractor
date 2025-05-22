@@ -32,7 +32,7 @@ def run_etl(conn):
     # TODO: Create col for array of grade level ints
     for j in range(len(df)):
         if (df['name'][j][0:3] == "grad"):
-          df['value'][j] = 12 - (int(df['value'][j]) - int(current_year))
+          df['value'][j] = convert_year(int(df['value'][j]), current_year)
 
     # Insert data
     print('Inserting data')
@@ -53,7 +53,7 @@ def run_etl(conn):
             print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
             # TODO: make this insert the grade levels as a list of integers
             trans_cols = np.append(columns[0:3], "grade")
-            trans_vals =np.append(values[0:3], '{' + ', '.join([convert_year(x, current_year) for x in values[3:] if type(x) == str and -1 < int(convert_year(x, current_year)) < 12]) + '}')
+            trans_vals =np.append(values[0:3], '{' + ', '.join([convert_year(x, current_year) for x in values[3:] if type(x) == str and -1 < int(convert_year(x, current_year)) < 13]) + '}')
             print("trans_cols:")
             print(trans_cols)
             print("trans_vals")
@@ -64,6 +64,9 @@ def run_etl(conn):
         break
 
     update_query = """DELETE FROM parents WHERE grade = '{}'"""
+    cursor.execute(update_query)
+
+    update_query = """DELETE FROM parents WHERE email = 'NaN'"""
     cursor.execute(update_query)   
 
 if __name__ == '__main__':
