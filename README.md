@@ -12,16 +12,17 @@ Created and maintained by Michael Lindner (github.com/MCLindner). Credit to just
 - OAuth Authentication: Secure access to Blackbaud’s APIs using OAuth tokens.
 
 ## Included ETL Pipelines
-Transcripts
-GPA
-Enrollment
-Attendance
-Transcript comments (official notes from advisors)
+- Transcripts
+- GPA
+- Enrollment
+- Attendance
+- Transcript comments (official notes from advisors)
+- Parent emails and grade levels of students
 
 Planned:
-Ravenna
-Non-blackbaud LMS data
-Raisers edge
+- Ravenna
+- Non-blackbaud LMS data
+- Raisers edge
 ... and more
 
 ## Prerequisites
