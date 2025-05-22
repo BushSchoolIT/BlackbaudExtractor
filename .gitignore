@@ -2,6 +2,7 @@
 /config/app_secrets.json
 /config/app_secrets.py
 etl/postgres_credentials.py
+etl/studentdev_credentials.py
 .vs
 etl/__pycache__/*.pyc
 etl/BbApiConnector/__pycache__/*.pyc
