@@ -172,41 +172,34 @@ def fix_cnc(conn):
         result = cursor.fetchall()
         df= pd.DataFrame(result, columns = ['student_user_id', 'school_year', 'course_id', 'grade_description', 'grade_id', 'grade', 'grad_year', 'term_id'])
 
-        group_list = df.groupby(['student_user_id','school_year', 'course_id']).groups
-
-        def occurs_once(a, item):
-                return a.count(item) == 1
-
-        def check_key(value):
-                for i in value.values.astype('int'):
-                        if occurs_once(df['grade'][i], ("CR" or "I" or "WF" or "WP")) == True:
-                                return value.values.astype('int')
-                else:
-                        pass
+        non_letter_grades = {'NC', 'CR', 'I', 'WF', 'WP'}
         index_list = []
-        for key, value in group_list.items():
-                if len(value) == 2:
-                        print(value)
-                        index_list.append(check_key(value))
+        
+        # Check if there exist pairs of courses where one is a non-letter-grade and the other is a letter grade for each student/class/year group
+        for key, group in df.groupby(['student_user_id', 'school_year', 'course_id']):
+                if len(group) == 2:
+                        grades = set(group['grade'])
+                        has_nc = any(g in non_letter_grades for g in grades)
+                        has_letter = any(g not in non_letter_grades for g in grades)
+                        if has_nc and has_letter:
+                                index_list.extend(group.index.tolist())
 
-        index_list = list(filter(lambda item: item is not None, index_list))
-        if len(index_list) > 0:
-                index_list = np.concatenate(index_list).ravel().tolist()
-                print(index_list)
-
-        print(str(len(index_list)) + " records to check")
+        print(f"{len(index_list)} records to fix")
         for i in index_list:
-                print(df.iloc[[i]])
+                print(df.loc[[i]])
 
+        # Update the rows
         for i in index_list:
-                # Defining the UPDATE query
-                update_query = """UPDATE public.transcripts
-                                SET grade_description = \'no_yearlong_possible\',
-                                        grade_id = 777777
-                                WHERE student_user_id = {student_user_id} AND
-                                        school_year = \'{school_year}\' AND
-                                        course_id = {course_id} AND
-                                        term_id = {term_id};""".format(student_user_id = df['student_user_id'][i], school_year = df['school_year'][i], course_id = df['course_id'][i], term_id = df['term_id'][i])
+                row = df.loc[i]
+                update_query = f"""
+                UPDATE public.transcripts
+                SET grade_description = 'no_yearlong_possible',
+                        grade_id = 777777
+                WHERE student_user_id = {row['student_user_id']} AND
+                        school_year = '{row['school_year']}' AND
+                        course_id = {row['course_id']} AND
+                        term_id = {row['term_id']};
+                """
                 print(update_query)
                 # Executing the UPDATE query
                 cursor.execute(update_query)
@@ -226,7 +219,7 @@ if __name__ == '__main__':
         # The year can be changed as reqired. When running without name == main, the year will be the current year.
         # clean_up(conn, '2023 - 2024') # WARNING this will delete all records with grade_id = 999999, 888888, 777777, 666666
         # fix_no_yearlong_possible(conn)
-        # fix_cnc(conn)
+        fix_cnc(conn)
         # fall_yearlongs(conn, '2023 - 2024')
-        insert_missing_transcript_categories(conn)
+        # insert_missing_transcript_categories(conn)
         conn.commit()
