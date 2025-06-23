@@ -22,7 +22,14 @@ def run_etl(conn):
   current_year = [d for d in req.json()["value"] if d['current_year'] == True]
   current_year = current_year[0]['school_year_label'][5:]
 
-  print('Getting contact data data')
+  # Insert the data into a temporary table first
+  temp_table_query = "CREATE TEMP TABLE temp_parents ON COMMIT DROP AS SELECT * FROM parents WHERE false;"
+  cursor.execute(temp_table_query)
+    
+  modify_statement = '''ALTER TABLE temp_parents ADD CONSTRAINT temp_parents_email_key UNIQUE (email);'''
+  cursor.execute(modify_statement)
+    
+  print('Getting contact data') 
   # We need to iterate through the pages of data, BB only returns 1000 rows at a time
   for i in range(1, 1500):
     print("Page " + str(i))
@@ -34,6 +41,7 @@ def run_etl(conn):
         if (df['name'][j][0:3] == "grad"):
           df['value'][j] = convert_year(int(df['value'][j]), current_year)
 
+
     # Insert data
     print('Inserting data')
     col_count = 8
@@ -44,7 +52,7 @@ def run_etl(conn):
             values = df["value"][index:(index+col_count)].values
 
             # TODO: POSTGRES QUERY HERE
-            insert_statement = '''INSERT INTO parents (%s) VALUES %s
+            insert_statement = '''INSERT INTO temp_parents (%s) VALUES %s
                 ON CONFLICT (email) 
                 DO UPDATE SET 
                 (first_name, last_name, grade) = (EXCLUDED.first_name, EXCLUDED.last_name, EXCLUDED.grade);
@@ -62,12 +70,28 @@ def run_etl(conn):
     else:
         print('No data')
         break
+    
+  update_query = """DELETE FROM temp_parents WHERE grade = '{}'"""
+  cursor.execute(update_query)
 
-    update_query = """DELETE FROM parents WHERE grade = '{}'"""
-    cursor.execute(update_query)
+  update_query = """DELETE FROM temp_parents WHERE email = 'NaN'"""
+  cursor.execute(update_query)   
 
-    update_query = """DELETE FROM parents WHERE email = 'NaN'"""
-    cursor.execute(update_query)   
+  sync_query = """
+  -- Upsert from temp_parents into parents
+  INSERT INTO parents (email, first_name, last_name, grade)
+  SELECT email, first_name, last_name, grade FROM temp_parents
+  ON CONFLICT (email) DO UPDATE SET
+  (first_name, last_name, grade) = (EXCLUDED.first_name, EXCLUDED.last_name, EXCLUDED.grade);
+  """
+  cursor.execute(sync_query)
+
+  delete_query = """
+  -- Delete rows in parents that are no longer present in the import
+  DELETE FROM parents
+  WHERE email NOT IN (SELECT email FROM temp_parents);
+  """
+  cursor.execute(delete_query)
 
 if __name__ == '__main__':
     print('Connecting to postgres')
