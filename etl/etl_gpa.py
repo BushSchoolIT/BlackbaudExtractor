@@ -31,8 +31,8 @@ def run_etl(conn):
                         AND  grade_id != 999999
                         AND (grade = \'A\' OR grade = \'A-\' OR grade = \'B+\' OR grade = \'B\' 
                         OR   grade = \'B-\' OR grade = \'C+\' OR grade = \'C\' OR grade = \'C-\'
-                        OR   grade = \'D+\' OR grade = \'D\' OR grade = \'F\' OR grade = \'WF\'
-                        OR   grade = \'NC\')             
+                        OR   grade = \'D+\' OR grade = \'D\' OR grade = \'D-\' OR grade = \'F\' 
+                        OR   grade = \'WF\' OR grade = \'NC\')             
                         ORDER BY student_user_id ASC;"""
 
     # Executing the SELECT query
