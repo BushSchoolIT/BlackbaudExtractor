@@ -37,12 +37,12 @@ def concatenate_graduated_status(conn):
                 print("building status")
                 if not row['graduated']:
                         if pd.isna(row['grad_year']):
-                                return f"Departure date: {row['depart_date'].strftime('%d-%m-%Y')}" if pd.notna(row['depart_date']) else None
+                                return f"Departed {row['depart_date'].strftime('%m-%d-%Y')}" if pd.notna(row['depart_date']) else None
                         else:
                                 return f"Class of {str(int(row['grad_year']))}"
                 else:
-                        depart_str = row['depart_date'].strftime('%d-%m-%Y') if pd.notna(row['depart_date']) else ""
-                        return f"Graduation date: {depart_str}" if depart_str else None
+                        depart_str = row['depart_date'].strftime('%m-%d-%Y') if pd.notna(row['depart_date']) else ""
+                        return f"Graduated {depart_str}" if depart_str else None
 
         df['graduated_status'] = df.apply(build_status, axis=1)
 
