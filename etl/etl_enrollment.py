@@ -3,6 +3,7 @@ from psycopg2.extensions import AsIs
 import pandas as pd
 import postgres_credentials
 from BbApiConnector import BbApiConnector
+import transform_enrollment
 
 def run_etl(conn):
   cursor = conn.cursor()
@@ -61,6 +62,8 @@ def run_etl(conn):
     else:
         print('No data')
         break   
+
+    transform_enrollment.concatenate_graduated_status(conn)
 
 if __name__ == '__main__':
     print('Connecting to postgres')
