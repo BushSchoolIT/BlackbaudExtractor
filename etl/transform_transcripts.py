@@ -172,7 +172,7 @@ def fix_cnc(conn):
         result = cursor.fetchall()
         df= pd.DataFrame(result, columns = ['student_user_id', 'school_year', 'course_id', 'grade_description', 'grade_id', 'grade', 'grad_year', 'term_id'])
 
-        non_letter_grades = {'NC', 'CR', 'I', 'WF', 'WP'}
+        non_letter_grades = {'NC', 'CR', 'I', 'WF', 'WP', 'AU'}
         index_list = []
         
         # Check if there exist pairs of courses where one is a non-letter-grade and the other is a letter grade for each student/class/year group
@@ -223,3 +223,4 @@ if __name__ == '__main__':
         # fall_yearlongs(conn, '2023 - 2024')
         # insert_missing_transcript_categories(conn)
         conn.commit()
+        conn.close()
