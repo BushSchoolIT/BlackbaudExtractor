@@ -16,6 +16,7 @@ from prefect.deployments import Deployment
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
+os.environ["PREFECT_API_URL"] = "http://localhost:4200/api"
 WORK_POOL = "work_pool_0"
 
 def pg_connect():
