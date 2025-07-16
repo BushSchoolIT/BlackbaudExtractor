@@ -2,7 +2,6 @@ import os
 import sys
 import io
 import subprocess
-from prefect import flow, serve, task
 import postgres_credentials
 import psycopg2
 import etl_attendance
@@ -11,13 +10,16 @@ import etl_gpa
 import etl_enrollment
 import etl_transcript_comments
 import etl_parents
+
+# SETUP environment BEFORE importing prefect (important)
+os.environ["PREFECT_API_URL"] = "http://localhost:4200/api"
+WORK_POOL = "work_pool_0"
+
+from prefect import flow, serve, task
 from prefect.task_runners import SequentialTaskRunner
 from prefect.deployments import Deployment
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-
-os.environ["PREFECT_API_URL"] = "http://localhost:4200/api"
-WORK_POOL = "work_pool_0"
 
 def pg_connect():
     print('Connecting to postgres')
