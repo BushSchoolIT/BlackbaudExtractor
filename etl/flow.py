@@ -12,8 +12,11 @@ import etl_enrollment
 import etl_transcript_comments
 import etl_parents
 from prefect.task_runners import SequentialTaskRunner
+from prefect.deployments import Deployment
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+
+WORK_POOL = "work_pool_0"
 
 def pg_connect():
     print('Connecting to postgres')
@@ -27,23 +30,23 @@ def pg_connect():
     return conn
 
 @task
-def transcripts_task(conn):
+def transcripts_task_py(conn):
     etl_transcripts.run_etl(conn)
 
 @task
-def gpa_task(conn):
+def gpa_task_py(conn):
     etl_gpa.run_etl(conn)
 
 @task
-def enrollment_task(conn):
+def enrollment_task_py(conn):
     etl_enrollment.run_etl(conn)
 
 @task 
-def comments_task(conn):
+def comments_task_py(conn):
     etl_transcript_comments.run_etl(conn)
 
 @task
-def parents_task():
+def parents_task_py():
     conn = pg_connect()
     try:
         etl_parents.run_etl(conn)
@@ -55,7 +58,7 @@ def parents_task():
         conn.close()
 
 @task
-def mailsync_task():
+def mailsync_task_py():
     exe_path = r"C:\Users\Install\mailsync\blackbaud-mailsync.exe"
     exe_dir = os.path.dirname(exe_path)
 
@@ -76,12 +79,12 @@ def mailsync_task():
         print(f"Error launching MailSync: {e}")
 
 @flow(task_runner=SequentialTaskRunner())
-def run_mailsync():
-    parents_task()
-    mailsync_task()
+def run_mailsync_py():
+    parents_task_py()
+    mailsync_task_py()
 
 @flow
-def run_attendance():
+def run_attendance_py():
     try:
         conn = pg_connect()
         etl_attendance.run_etl(conn)
@@ -93,15 +96,15 @@ def run_attendance():
         conn.rollback()
 
 @flow
-def run_transcripts():
+def run_transcripts_py():
     try:
         conn = pg_connect()
         conn.autocommit = False
 
-        enrollment_task(conn)
-        transcripts_task(conn)
-        gpa_task(conn)
-        comments_task(conn)
+        enrollment_task_py(conn)
+        transcripts_task_py(conn)
+        gpa_task_py(conn)
+        comments_task_py(conn)
 
         conn.commit()
         conn.close()
@@ -113,10 +116,23 @@ def run_transcripts():
 
   
 if __name__ == "__main__":
-    attendance_deploy = run_attendance.to_deployment(name="run_attendance",
-    interval=86400)
-    transcripts_deploy = run_transcripts.to_deployment(name="run_transcripts",
-	interval=86400)
-    mailsync_deploy = run_mailsync.to_deployment(name="run_mailsync",
-	interval=86400)
-    serve(attendance_deploy, transcripts_deploy, mailsync_deploy)
+    Deployment.build_from_flow(
+        flow=run_attendance_py,
+        name="run_attendance_py",
+        work_pool_name=WORK_POOL,
+        schedule={"interval": 86400}
+    ).apply()
+
+    Deployment.build_from_flow(
+        flow=run_transcripts_py,
+        name="run_transcripts_py",
+        work_pool_name=WORK_POOL,
+        schedule={"interval": 86400}
+    ).apply()
+
+    Deployment.build_from_flow(
+        flow=run_mailsync_py,
+        name="run_mailsync_py",
+        work_pool_name=WORK_POOL,
+        schedule={"interval": 86400}
+    ).apply()
