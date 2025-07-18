@@ -23,7 +23,7 @@ def run_etl(conn):
       
     df = pd.json_normalize(req.json()["results"]["rows"], "columns").reset_index()
     print('Inserting data')
-    col_count = 8
+    col_count = 9
     if (len(df) > 0):
         for index in range(0, len(df), col_count):
             columns = df["name"][index:(index+col_count)].values
@@ -32,7 +32,7 @@ def run_etl(conn):
             insert_statement = '''INSERT INTO enrollment (%s) VALUES %s
                 ON CONFLICT (student_user_id) 
                 DO UPDATE SET 
-                (student_first,student_last,grad_year,enroll_date, graduated, enroll_grade, enroll_year) = (EXCLUDED.student_first,EXCLUDED.student_last,EXCLUDED.grad_year,EXCLUDED.enroll_date, EXCLUDED.graduated, EXCLUDED.enroll_grade, EXCLUDED.enroll_year);'''
+                (student_first,student_last,grad_year,enroll_date, graduated, enroll_grade, enroll_year, email) = (EXCLUDED.student_first,EXCLUDED.student_last,EXCLUDED.grad_year,EXCLUDED.enroll_date, EXCLUDED.graduated, EXCLUDED.enroll_grade, EXCLUDED.enroll_year, EXCLUDED.email);'''
             print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
             cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
     else:
@@ -47,7 +47,7 @@ def run_etl(conn):
       
     df = pd.json_normalize(req.json()["results"]["rows"], "columns").reset_index()
     print('Inserting data')
-    col_count = 4
+    col_count = 5
     if (len(df) > 0):
         for index in range(0, len(df), col_count):
             columns = df["name"][index:(index+col_count)].values
@@ -56,7 +56,7 @@ def run_etl(conn):
             insert_statement = '''INSERT INTO enrollment (%s) VALUES %s
                 ON CONFLICT (student_user_id) 
                 DO UPDATE SET 
-                (depart_date,graduated,depart_year) = (EXCLUDED.depart_date,EXCLUDED.graduated,EXCLUDED.depart_year);'''
+                (depart_date,graduated,depart_year, email) = (EXCLUDED.depart_date, EXCLUDED.graduated, EXCLUDED.depart_year, EXCLUDED.email);'''
             print(cursor.mogrify(insert_statement, (AsIs(','.join(columns)), tuple(values))))
             cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
     else:
